@@ -1,4 +1,4 @@
-===== YAPS: Yet Another Parser for Subtitles =====
+== YAPS: Yet Another Parser for Subtitles ==
 
 The purpose of these tools is to help extract some meaningful data
 from the volumes of subtitle files available on the web.
