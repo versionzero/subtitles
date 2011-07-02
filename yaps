@@ -1,0 +1,111 @@
+#!/usr/bin/perl -w
+
+###
+### Written by Ben Burnett <burnett aT cs DoT uleth dOT ca>
+###
+### The words (wherds), accidental insight (axedental incites),
+### unreferenced sources (unreffernced) are mine, the the work is for
+### the public.
+###
+### Licensed (Licencsed) under GPLv3 or any later version.
+###
+
+use strict;
+use warnings;
+use Switch 'Perl6';
+
+# Just one file at a time.
+if ($#ARGV != 0) {
+  die "usage: $0 filename.srt\n";
+}
+
+# We should be receiving one file
+my $chatter = $ARGV[0];
+
+##
+# We're building a quick'n-dirty state-machine.  Three states, and
+# we're away: first we are just looking for the sequence number; once
+# we have found it, we stash the times the subtitle should appear on
+# the screen with it; finally, we read all the text until we see an
+# empty line, which tells us to start the search over again.
+##
+use constant {
+  SEARCHING => 'Sequence',
+  FOUND     => 'Timecode',
+  SUBTITLE  => 'Subtitle'
+};
+
+my $state = SEARCHING;
+my ($subtitle, $from, $to);
+
+sub make_index {
+  my ($from, $subtitle) = @_;
+  # Remove any non-word character (there likely is a better way do do this)
+  $subtitle =~ y/\!\@\#\$\%\^\&\*\(\)\<\>\,\.\;\/\'\"/ /;
+  # Compress the spaces to just one
+  $subtitle =~ s/[ ]+/ /g;
+  # Casefolding
+  $subtitle =~ y/A-Z/a-z/;
+  my @words = split(/ /, $subtitle);
+  for (sort @words) {
+    print "$_, $from\n"
+  }
+}
+
+open (INPUT, "<$chatter");
+while (<INPUT>) {
+  chomp;
+  #print "<$state>|$_\n";
+  given ($state) {
+    when (SEARCHING) {
+      ##
+      # Looking for the sequence number, which starts the subtitle
+      # entry.
+      ##
+      if (/^([0-9]+)$/) {
+	$state = FOUND;
+      }
+    }
+    when (FOUND) {
+      ##
+      # We now have a sequence number, so we *should* be looking at
+      # the times that the subtitle should appear and disappear on the
+      # screen.  We expect the following format:
+      #
+      #   ^00:01:03,163 --> 00:01:04,425$
+      #
+      # Where '^' and '$' are the start of the start and the end of
+      # the line, respectively.
+      ##
+      tr/,/./;
+      if (/^([^ ]*) --\> ([^ ]*)$/) {
+	#print "$1 to $2\n";
+	$from     = $1;
+	$to       = $2;
+	$state    = SUBTITLE;
+	$subtitle = "";
+      }
+    }
+    when (SUBTITLE) {
+      ##
+      # What remains are the lines of the subtitle itself.  We just
+      # iteratate over them until we see a blank line, which signals
+      # the end of the subtitle.
+      ##
+      if (/^$/) {
+	$state = SEARCHING;
+	make_index($from, $subtitle);
+      } elsif (/(.*)/) {
+	$subtitle .= "$1 ";
+      }
+    }
+  }
+}
+
+##
+# Sometimes, there is no empty line after the last subtitle entry.  In
+# this case, we just echo the last one we were looking at.
+##
+if ($subtitle) {
+  make_index($from, $subtitle);
+}

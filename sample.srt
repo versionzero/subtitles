@@ -1,0 +1,20 @@
+1
+00:00:56,656 --> 00:01:00,285
+Your recent operations have been failures.
+
+2
+00:01:00,460 --> 00:01:02,951
+I have doubts about
+
+3
+00:01:03,163 --> 00:01:04,425
+your present proposal.
+
+4
+00:01:04,664 --> 00:01:05,289
+Yes, sir.
+
+5
+00:01:05,465 --> 00:01:07,899
+Governor, in my opinion,
+this is an dumb move.
