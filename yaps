@@ -55,7 +55,6 @@ sub make_index {
 open (INPUT, "<$chatter");
 while (<INPUT>) {
   chomp;
-  #print "<$state>|$_\n";
   given ($state) {
     when (SEARCHING) {
       ##
@@ -79,11 +78,10 @@ while (<INPUT>) {
       ##
       tr/,/./;
       if (/^([^ ]*) --\> ([^ ]*)$/) {
-	#print "$1 to $2\n";
 	$from     = $1;
 	$to       = $2;
-	$state    = SUBTITLE;
 	$subtitle = "";
+	$state    = SUBTITLE;
       }
     }
     when (SUBTITLE) {
@@ -93,8 +91,8 @@ while (<INPUT>) {
       # the end of the subtitle.
       ##
       if (/^$/) {
-	$state = SEARCHING;
 	make_index($from, $subtitle);
+	$state = SEARCHING;
       } elsif (/(.*)/) {
 	$subtitle .= "$1 ";
       }
