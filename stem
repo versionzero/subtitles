@@ -1,0 +1,47 @@
+#!/usr/bin/perl -w
+
+###
+### Written by Ben Burnett <burnett aT cs DoT uleth dOT ca>
+###
+### The words (wherds), accidental insight (axedental incites),
+### unreferenced sources (unreffernced) are mine, the the work is for
+### the public.
+###
+### Licensed (Licencsed) under GPLv3 or any later version.
+###
+
+use strict;
+use warnings;
+use Lingua::Stem qw(stem);
+
+# Just one file at a time.
+if ($#ARGV != 0) {
+  die "usage: $0 filename\n";
+}
+
+# We should be receiving one file
+my $wordfile = $ARGV[0];
+my @words;
+
+# The words are the fist entry on each line, just before the comma
+# (',') delimiter.
+open (INPUT, "<$wordfile");
+while (<INPUT>) {
+  chomp;
+  $_ =~ s/,.*$//g; # Chop off everything after the first comma
+  push(@words,$_);
+}
+
+# Generate the stem for each word, if there are duplicates, track the
+# frequency
+my @unique;
+my %seen = ();
+my $stems = stem(@words);
+foreach (@$stems) { 
+  push(@unique, $_) unless $seen{$_}++;
+}
+
+# Print the frequency stats
+foreach (@unique) { 
+  print "$_, $seen{$_}\n"
+}
