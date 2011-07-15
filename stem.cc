@@ -179,7 +179,7 @@ static int cvc(struct stemmer * z, int i)
 
 /* ends(z, s) is TRUE <=> 0,...k ends with the string s. */
 
-static int ends(struct stemmer * z, char * s)
+static int ends(struct stemmer * z, char const * s)
 {  int length = s[0];
    char * b = z->b;
    int k = z->k;
@@ -193,7 +193,7 @@ static int ends(struct stemmer * z, char * s)
 /* setto(z, s) sets (j+1),...k to the characters in the string s, readjusting
    k. */
 
-static void setto(struct stemmer * z, char * s)
+static void setto(struct stemmer * z, char const * s)
 {  int length = s[0];
    int j = z->j;
    memmove(z->b + j + 1, s + 1, length);
@@ -202,7 +202,7 @@ static void setto(struct stemmer * z, char * s)
 
 /* r(z, s) is used further down. */
 
-static void r(struct stemmer * z, char * s) { if (m(z) > 0) setto(z, s); }
+static void r(struct stemmer * z, char const * s) { if (m(z) > 0) setto(z, s); }
 
 /* step1ab(z) gets rid of plurals and -ed or -ing. e.g.
 
