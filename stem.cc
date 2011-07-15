@@ -390,51 +390,24 @@ extern int stem(struct stemmer * z, char * b, int k)
 
 static char * s;         /* buffer for words tobe stemmed */
 
-#define INC 50           /* size units in which s is increased */
-static int i_max = INC;  /* maximum offset in s */
-
-#define LETTER(ch) (isupper(ch) || islower(ch))
-
-void stemfile(struct stemmer * z, FILE * f)
-{  while(TRUE)
-   {  int ch = getc(f);
-      if (ch == EOF) return;
-      if (LETTER(ch))
-      {  int i = 0;
-         while(TRUE)
-         {  if (i == i_max)
-            {  i_max += INC;
-               s = realloc(s, i_max + 1);
-            }
-            ch = tolower(ch); /* forces lower case */
-
-            s[i] = ch; i++;
-            ch = getc(f);
-            if (!LETTER(ch)) { ungetc(ch,f); break; }
-         }
-         s[stem(z, s, i - 1) + 1] = 0;
-         /* the previous line calls the stemmer and uses its result to
-            zero-terminate the string in s */
-         printf("%s",s);
-      }
-      else putchar(ch);
-   }
-}
-
-int main(int argc, char * argv[])
-{  int i;
-
-   struct stemmer * z = create_stemmer();
-
-   s = (char *) malloc(i_max + 1);
-   for (i = 1; i < argc; i++)
-   {  FILE * f = fopen(argv[i],"r");
-      if (f == 0) { fprintf(stderr,"File %s not found\n",argv[i]); exit(1); }
-      stemfile(z, f);
-   }
-   free(s);
-
-   free_stemmer(z);
-
-   return 0;
+int 
+main(int argc, char * argv[])
+{  
+  if (argc != 2) {
+    printf("usage: %s <word>\n", argv[0]);
+    exit(1);
+  }
+  
+  struct stemmer *z = create_stemmer();
+  
+  char *word  = argv[1];
+  int  length = strlen(word) - 1;
+  int  n      = stem(z, word, length) + 1;
+  word[n]     = 0;
+  
+  free_stemmer(z);
+  
+  printf("%s\n", word);
+  
+  return 0;
 }
