@@ -12,6 +12,7 @@
 
 use strict;
 use warnings;
+use threads;
 use Lingua::Stem qw(stem);
 
 # Just one file at a time.
@@ -21,27 +22,45 @@ if ($#ARGV != 0) {
 
 # We should be receiving one file
 my $wordfile = $ARGV[0];
-my @words;
 
-# The words are the fist entry on each line, just before the comma
-# (',') delimiter.
+# The words are the fist entry on each line
+my @words;
+my @remainder;
 open (INPUT, "<$wordfile");
 while (<INPUT>) {
   chomp;
-  $_ =~ s/,.*$//g; # Chop off everything after the first comma
-  push(@words,$_);
+  if (/^([^,]*),\ +(.*)$/) {
+    push(@words,$1);
+    push(@remainder,$2);
+  }
 }
 
-# Generate the stem for each word, if there are duplicates, track the
-# frequency
+# Generate the stem for each word and calculate the stem's frequency
 my @unique;
 my %seen = ();
 my $stems = stem(@words);
-foreach (@$stems) { 
+foreach (@$stems) {
   push(@unique, $_) unless $seen{$_}++;
 }
 
-# Print the frequency stats
-foreach (@unique) { 
-  print "$_, $seen{$_}\n"
+# Print the results
+my @threads;
+push(@threads,threads->new(\&print_words));
+push(@threads,threads->new(\&print_stems));
+foreach (@threads) {
+  $_->join;
+}
+
+# Print the the original information, including the stem
+sub print_words {
+  for my $i (0 .. $#words) {
+    printf "$words[$i], @$stems[$i], $remainder[$i]\n";
+  }
+}
+
+# Print all non-empty stems and their frequency
+sub print_stems {
+  foreach (@unique) {
+    print STDERR "$_, $seen{$_}\n" unless !$_;
+  }
 }
