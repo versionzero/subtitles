@@ -13,6 +13,7 @@
 use strict;
 use warnings;
 use Switch 'Perl6';
+use Lingua::Stem qw(stem);
 
 # Just one file at a time.
 if ($#ARGV != 0) {
@@ -41,14 +42,17 @@ my ($subtitle, $from, $to);
 sub make_index {
   my ($from, $subtitle) = @_;
   # Remove any non-word character (there likely is a better way do do this)
-  $subtitle =~ y/\!\@\#\$\%\^\&\*\(\)\<\>\,\.\;\/\'\"/ /;
+  $subtitle =~ y/\!\@\#\$\%\^\&\*\(\)\<\>\,\.\;\/\"\-\_\=\+/ /;
+  # Remove the leading and trailing spaces
+  $subtitle =~ s/^\ *//g;
+  $subtitle =~ s/\ *$//g;
   # Compress the spaces to just one
-  $subtitle =~ s/[ ]+/ /g;
+  $subtitle =~ s/\ +/ /g;
   # Casefolding
   $subtitle =~ y/A-Z/a-z/;
   my @words = split(/ /, $subtitle);
-  for (sort @words) {
-    print "$_, $from\n"
+  for my $i (0 .. $#words) {
+    print "$words[$i], $i, $from\n";
   }
 }
 
