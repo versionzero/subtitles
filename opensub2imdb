@@ -1,0 +1,23 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use Tie::Handle::CSV;
+
+# Just one file at a time.
+if ($#ARGV != 0) {
+  die "usage: $0 filename.csv\n";
+}
+
+# Open Subtitles DB file
+my $dbfile = $ARGV[0];
+
+my $fh = Tie::Handle::CSV->new($dbfile, header => 1, sep_char => "\t", key_case => 'any');
+
+while (my $csv_line = <$fh>) {
+  if ($csv_line) {
+    print $csv_line->{'IDMovieImdb'} . ", " . $csv_line->{'SubDownloadLink'} . "\n";
+  }
+}
+
+close $fh;
