@@ -7,6 +7,7 @@ YAPS et al. requires the ''Lingua::Stem'' Perl module, it can easily
 installed like so:
 
     perl -MCPAN -e 'install Lingua::Stem'
+    perl -MCPAN -e 'install Tie::Handle::CSV'
 
 For a complete index of where a word exists in a film, simply run the
 following command line:
