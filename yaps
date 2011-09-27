@@ -12,16 +12,17 @@
 
 use strict;
 use warnings;
-use Switch 'Perl6';
+use Switch qw(Perl6);
 use Lingua::Stem qw(stem);
 
 # Just one file at a time.
-if ($#ARGV != 0) {
-  die "usage: $0 filename.srt\n";
+if ($#ARGV <= 0) {
+  die "usage: $0 filename.srt [skip-N-subs]\n";
 }
 
 # We should be receiving one file
 my $chatter = $ARGV[0];
+my $skip    = $#ARGV > 0 ? $ARGV[1] : 0;
 
 ##
 # We're building a quick'n-dirty state-machine.  Three states, and
@@ -41,8 +42,10 @@ my ($subtitle, $from, $to);
 
 sub make_index {
   my ($from, $subtitle) = @_;
+  # If there is any HTML, remove it
+  $subtitle =~ s/<[^>]*>/ /g;
   # Remove any non-word character (there likely is a better way do do this)
-  $subtitle =~ y/\!\@\#\$\%\^\&\*\(\)\<\>\,\.\;\/\"\-\_\=\+/ /;
+  $subtitle =~ y/\?\!\@\#\$\%\^\&\*\(\)\{\}\[\]\<\>\,\.\;\:\/\"\-\_\=\+/ /;
   # Remove the leading and trailing spaces
   $subtitle =~ s/^\ *//g;
   $subtitle =~ s/\ *$//g;
@@ -95,7 +98,11 @@ while (<INPUT>) {
       # the end of the subtitle.
       ##
       if (/^$/) {
-	make_index($from, $subtitle);
+	if ($skip > 0) {
+	  --$skip;
+	} else {
+	  make_index($from, $subtitle);
+	}
 	$state = SEARCHING;
       } elsif (/(.*)/) {
 	$subtitle .= "$1 ";
