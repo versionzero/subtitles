@@ -1,0 +1,96 @@
+#!/bin/bash
+
+###
+### Written by Ben Burnett <burnett aT cs DoT uleth dOT ca>
+###
+### The words (wherds), accidental insight (axedental incites),
+### unreferenced sources (unreffernced) are mine, the resulting work
+### is for the public.
+###
+### Licensed (Licencsed) under GPLv3 or any later version.
+###
+
+##
+## Simple helpers
+##
+
+function error {
+    printf "$@" 2>&1;
+}
+
+function die {
+    error "$@";
+    exit 1;
+}
+
+##
+## Global variables
+##
+
+MISTAKE=$1;
+CORRECTION=$2;
+CACHE_PATH=".";
+DB_FILENAME="${CACHE_PATH}/subtitles.db";
+SQLITE_CMD="sqlite3 ${DB_FILENAME} "
+
+##
+## Use a SQLite DB to store movie subtitles.
+##
+
+# If the DB does not exist, then we create one and initialize its
+# schema.
+function initialize_db {
+    ${SQLITE_CMD} "CREATE TABLE movies(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT);";
+    ${SQLITE_CMD} "CREATE TABLE words(id INTEGER PRIMARY KEY AUTOINCREMENT, movie INTEGER, \
+                   word TEXT, stem TEXT, position INTEGER, time TEXT \
+                   FOREIGN KEY(movie) REFERENCES movies(id));";
+}
+
+# If needed, create an empty DB:
+if [ ! -e ${DB_FILENAME} ]; then
+    printf "Creating a new empty db: ${DB_FILENAME} ...\n"
+    initialize_db;
+fi
+
+function runsql {
+    ${SQLITE_CMD} "$@"
+}
+
+function fetch_word_id {
+    local WORD=$1;
+    runsql "SELECT id FROM words WHERE word='${WORD}';";
+}
+
+function insert_word {
+    local MOVIE=$1;
+    local WORD=$2;
+    local POSITION=$3;
+    local TIME=$4;
+    runsql "INSERT INTO words(movie, word, position, time) VALUES(${MOVIE}, '${WORD}', ${POSITION}, '${TIME}');";
+}
+
+function fetch_word_information_by_id {
+    local ID=$1;
+    runsql "SELECT movie, word, position, time FROM words WHERE id='${ID}';";
+}
+
+# A quick and simple procedue to insert new corrections into the DB.
+function add_movie_word {
+    local MISTAKE=$1;
+    local CORRECTION=$2;
+    local ID=$(fetch_correction_id ${CORRECTION});
+    if [ -z "${ID}" ]; then
+	insert_correction ${CORRECTION};
+	ID=$(fetch_correction_id ${CORRECTION});
+    fi
+    insert_mistake_by_id ${ID} ${MISTAKE};
+}
+
+# A quick and simple procedues to find a correction in the DB.
+function fetch_correction {
+    local MISTAKE=$1;
+    local ID=$(fetch_mistake_id ${MISTAKE});
+    if [ -n "${ID}" ]; then
+	fetch_correction_by_id ${ID};
+    fi
+}

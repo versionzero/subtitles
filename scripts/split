@@ -1,0 +1,49 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+if ($#ARGV != 0) {
+  die "usage: $0 filename.csv\n";
+}
+
+# Spit out the generic part of our submission script
+print <<EOF;
+universe   = vanilla
+executable = slurp
+output     = slurp.\$(cluster).out
+error      = slurp.\$(cluster).error
+log        = slurp.\$(cluster).log
+EOF
+
+# Remove any intermediate results
+open(INPUT, $ARGV[0]);
+while (<INPUT>) {
+  chomp;
+  if (/^([^,]*),(.*)$/) {
+    unlink "./$1/$1.in" if -f "./$1/$1.in";
+    rmdir  $1           if -d $1;
+    
+  }
+}
+close INPUT;
+
+# Grab the latest results
+open(INPUT, $ARGV[0]);
+while (<INPUT>) {
+  chomp;
+  if (/^([^,]*),(.*)$/) {
+    unless (-d $1) {
+      close(FD);
+      mkdir $1 unless -d $1;
+      open(FD, ">./$1/$1.in") or die "Failed to open file $1.in: $!\n";
+      print "\ninitialdir = $1/\n";
+      print "arguments  = $1.in\n";
+      print "queue;"
+    }
+    print FD "$2\n";
+  }
+}
+close FD;
+close INPUT;
+

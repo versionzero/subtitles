@@ -1,0 +1,29 @@
+#!/bin/bash
+
+###
+### Written by Ben Burnett <burnett aT cs DoT uleth dOT ca>
+###
+### The words (wherds), accidental insight (axedental incites),
+### unreferenced sources (unreffernced) are mine, the resulting work
+### is for the public.
+###
+### Licensed (Licencsed) under GPLv3 or any later version.
+###
+
+# This is just a stub, most of the code resides in a common bash
+# source file.
+GSPELL_COMMON="`dirname $0`/group-spell-common"
+if [ -f ${GSPELL_COMMON} ]; then
+    . ${GSPELL_COMMON}
+else
+    echo "Failed to find ${GSPELL_COMMON}."
+    exit 1
+fi
+
+# Just one correction at a time.
+if [ $# -ne 1 ]; then
+    die "usage: `basename $0` <word>\n"
+fi
+
+# Find the correction to our DB:
+fetch_correction ${MISTAKE};

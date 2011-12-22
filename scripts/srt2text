@@ -53,10 +53,11 @@ sub make_index {
   $subtitle =~ s/\ +/ /g;
   # Casefolding
   $subtitle =~ y/A-Z/a-z/;
-  my @words = split(/ /, $subtitle);
-  for my $i (0 .. $#words) {
-    print "$words[$i], $i, $from\n";
-  }
+  #my @words = split(/ /, $subtitle);
+  #for my $i (0 .. $#words) {
+  #  print "$words[$i], $i, $from\n";
+  #}
+  print "$subtitle\n";
 }
 
 open (INPUT, "<$chatter");
@@ -85,8 +86,6 @@ while (<INPUT>) {
       ##
       tr/,/./;
       if (/^([^ ]*) --\> ([^ ]*)$/) {
-	$from     = $1;
-	$to       = $2;
 	$subtitle = "";
 	$state    = SUBTITLE;
       }
@@ -102,6 +101,7 @@ while (<INPUT>) {
 	  --$skip;
 	} else {
 	  make_index($from, $subtitle);
+          $subtitle = "";
 	}
 	$state = SEARCHING;
       } elsif (/(.*)/) {
