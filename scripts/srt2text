@@ -16,7 +16,7 @@ use Switch qw(Perl6);
 use Lingua::Stem qw(stem);
 
 # Just one file at a time.
-if ($#ARGV <= 0) {
+if ($#ARGV < 0) {
   die "usage: $0 filename.srt [skip-N-subs]\n";
 }
 
@@ -38,10 +38,12 @@ use constant {
 };
 
 my $state = SEARCHING;
-my ($subtitle, $from, $to);
+my $i     = $skip;
+my @deque;
+my $subtitle;
 
-sub make_index {
-  my ($from, $subtitle) = @_;
+sub clean {
+  my ($subtitle) = @_;
   # If there is any HTML, remove it
   $subtitle =~ s/<[^>]*>/ /g;
   # Remove any non-word character (there likely is a better way do do this)
@@ -55,9 +57,30 @@ sub make_index {
   $subtitle =~ y/A-Z/a-z/;
   #my @words = split(/ /, $subtitle);
   #for my $i (0 .. $#words) {
-  #  print "$words[$i], $i, $from\n";
+  #  print "$words[$i], $i\n";
   #}
-  print "$subtitle\n";
+  return $subtitle;
+}
+
+sub qpush {
+  my ($subtitle) = @_;
+  push @deque, "$subtitle";
+}
+
+sub qpop {
+  # The deque's size will be -1 when it is empty, so we check for a
+  # request to skip no lines.
+  if ($#deque > $skip || 0 == $skip) {
+    if (my $subtitle = shift @deque) {
+      print "$subtitle\n";
+    }
+  }
+}
+
+sub process {
+  my ($subtitle) = @_;
+  qpush(clean($subtitle));
+  qpop;
 }
 
 open (INPUT, "<$chatter");
@@ -97,11 +120,11 @@ while (<INPUT>) {
       # the end of the subtitle.
       ##
       if (/^$/) {
-	if ($skip > 0) {
-	  --$skip;
+	if ($i > 0) {
+	  --$i;
 	} else {
-	  make_index($from, $subtitle);
-          $subtitle = "";
+	  process($subtitle);
+	  $subtitle = "";
 	}
 	$state = SEARCHING;
       } elsif (/(.*)/) {
@@ -115,6 +138,4 @@ while (<INPUT>) {
 # Sometimes, there is no empty line after the last subtitle entry.  In
 # this case, we just echo the last one we were looking at.
 ##
-if ($subtitle) {
-  make_index($from, $subtitle);
-}
+process($subtitle);
