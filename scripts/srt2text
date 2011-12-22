@@ -79,7 +79,7 @@ sub qpop {
 
 sub process {
   my ($subtitle) = @_;
-  qpush(clean($subtitle));
+  qpush(clean(@_));
   qpop;
 }
 
