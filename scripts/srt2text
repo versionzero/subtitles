@@ -15,14 +15,8 @@ use warnings;
 use Switch qw(Perl6);
 use Lingua::Stem qw(stem);
 
-# Just one file at a time.
-if ($#ARGV < 0) {
-  die "usage: $0 filename.srt [skip-N-subs]\n";
-}
-
-# We should be receiving one file
-my $chatter = $ARGV[0];
-my $skip    = $#ARGV > 0 ? $ARGV[1] : 0;
+# We should be receiving one argument
+my $skip = $#ARGV >= 0 ? $ARGV[0] : 0;
 
 ##
 # We're building a quick'n-dirty state-machine.  Three states, and
@@ -82,8 +76,7 @@ sub process {
   qpop;
 }
 
-open (INPUT, "<$chatter");
-while (<INPUT>) {
+while (<STDIN>) {
   chomp;
   given ($state) {
     when (SEARCHING) {
