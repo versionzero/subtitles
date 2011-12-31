@@ -1,0 +1,19 @@
+
+FLATTEN=../scripts/srt2text
+MAP=./freq-map
+REDUCE=./freq-reduce
+
+1.txt: 1.srt
+       $FLATTEN <1.srt >|1.txt
+
+1.freq: 1.txt
+       cat 1.txt | $MAP | $REDUCE >|1.freq
+
+2.txt: 2.srt
+       $FLATTEN <2.srt >|2.txt
+
+2.freq: 2.txt
+       cat 2.txt | $MAP | $REDUCE >|2.freq
+
+all.freq: 1.freq 2.freq
+       cat 1.freq 2.freq | $REDUCE >|all.freq
