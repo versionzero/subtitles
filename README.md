@@ -25,7 +25,7 @@ following:
     ...
 
 And so on.  What it shows is the normalized version of the original
-subtitles.  To generage some interesting information on the words,
+subtitles.  To generate some interesting information on the words,
 type the following:
 
     $ cat sample.srt | srt2text | freq-map 
@@ -43,13 +43,13 @@ The output will resemble the following:
 
 Note that there will be repeated words.  This is expected.  The
 ''freq-map'' command simply sets the frequency of each word it
-encouters to 1.  The reduce step bellow does all the heavy lifting.
+encounters to 1.  The reduce step bellow does all the heavy lifting.
 
-To compleate the frequency count, the reduce function must be used.
-This sums the occurances of each word and prints out the frequencies
+To complete the frequency count, the reduce function must be used.
+This sums the occurrences of each word and prints out the frequencies
 of words in alphabetic order.
 
-The following is the compleate command line for the entire workflow:
+The following is the complete command line for the entire workflow:
 
     $ cat sample.srt | srt2text | freq-map | freq-reduce
 
