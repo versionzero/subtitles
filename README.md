@@ -9,48 +9,65 @@ installed like so:
     perl -MCPAN -e 'install Lingua::Stem'
     perl -MCPAN -e 'install Tie::Handle::CSV'
 
-For a complete index of where a word exists in a film, simply run the
-following command line:
+To parse a file for later processing, simply run the following command
+line:
 
-    $ ./yaps sample.srt | tee sample.words
+    $ cat sample.srt | srt2text
 
 Where ''sample.srt'' is a subtitle file.  The output will resemble the
 following:
 
-    your, 0, 00:00:56.656
-    recent, 1, 00:00:56.656
-    operations, 2, 00:00:56.656
-    have, 3, 00:00:56.656
-    been, 4, 00:00:56.656
-    failures, 5, 00:00:56.656
+    your recent operations have been failures
+    i have doubts about
+    your present proposal
+    yes sir
+    governor in my opinion this is an dumb move
     ...
 
-And so on.  What it shows is the word, it's order in the original
-subtitle sentence and the start time of the subtitle.  To generage
-some interesting information on the words and their stems, type the
-following:
+And so on.  What it shows is the normalized version of the original
+subtitles.  To generage some interesting information on the words,
+type the following:
 
-    $ ./stem sample.words >|sample.stems 2>|sample.freq
+    $ cat sample.srt | srt2text | freq-map 
 
-The ''sample.stem'' output will resemble the following:
+The output will resemble the following:
 
-    your, your, 0, 00:00:56.656
-    recent, recent, 1, 00:00:56.656
-    operations, oper, 2, 00:00:56.656
-    have, have, 3, 00:00:56.656
-    been, been, 4, 00:00:56.656
-    failures, failur, 5, 00:00:56.656
+    your 1
+    recent 1
+    operations 1
+    have 1
+    been 1
+    failures 1
+    i 1
     ...
 
-The ''sample.freq'' should resemble:
+Note that there will be repeated words.  This is expected.  The
+''freq-map'' command simply sets the frequency of each word it
+encouters to 1.  The reduce step bellow does all the heavy lifting.
 
-    your, 2
-    recent, 1
-    oper, 1
-    have, 2
-    been, 1
-    failur, 1
-    ...
+To compleate the frequency count, the reduce function must be used.
+This sums the occurances of each word and prints out the frequencies
+of words in alphabetic order.
+
+The following is the compleate command line for the entire workflow:
+
+    $ cat sample.srt | srt2text | freq-map | freq-reduce
+
+The output will resemble the map step, but with frequencies >= 1, like
+so:
+
+    governor 1
+    have 2
+    i 1
+    in 1
+    is 1...
+
+We use this multi-step approach so that we can bundle several analysis
+steps together.  For instance, ''freq-reduce'' can take any size of
+input with repeating or unique words and any integer frequency.  It
+will always produce output that merges and sum the any non-unique
+word.  Thus, given 100 subtitle files, it would produce a single
+agregate to represent them all.
 
 That's it.  One day this might actually be useful.
 
