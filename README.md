@@ -60,7 +60,8 @@ so:
     have 2
     i 1
     in 1
-    is 1...
+    is 1
+    ...
 
 We use this multi-step approach so that we can bundle several analysis
 steps together.  For instance, ''freq-reduce'' can take any size of
