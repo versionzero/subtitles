@@ -1,0 +1,128 @@
+%%
+% Ben Burnett
+%%
+
+%\documentclass[12pt]{book}
+%\documentclass[english]{scrbook}
+\documentclass[fontsize=12pt,english]{scrartcl}
+
+% The goal of the savetrees package is to pack as much text as
+% possible onto each page of a LATEX document. Admittedly, this makes
+% the document far less attractive. Nevertheless, savetrees is a
+% simple way to SAVE PAPER WHEN PRINTING DRAFT COPIES of a
+% document. It can also be useful when trying to meet a tight
+% page-length requirement for a conference or journal submission.
+%\usepackage{savetrees}
+
+% We would like click-able hyper{links,references}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,%
+    citecolor=black,%
+    filecolor=black,%
+    linkcolor=black,%
+    urlcolor=black
+}
+
+% Language stuff
+\usepackage[canadian]{babel}
+\usepackage[utf8]{inputenc}
+
+% Font
+\usepackage[T1]{fontenc}
+
+% ref: http://www.tex.ac.uk/tex-archive/macros/latex/contrib/microtype/microtype.pdf
+\usepackage[protrusion=true,expansion=true]{microtype}
+
+% Citation help
+%\usepackage[numbers]{natbib}
+
+% AMSLaTeX packages
+%\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% Awful double-spacing.
+% Do *not* be tempted by doublespace:
+% Ref: http://www.tex.ac.uk/cgi-bin/texfaq2html?label=linespace
+%\usepackage{setspace}
+
+% Improved row/column control
+%\usepackage{multirow}
+%\usepackage{booktabs}
+
+% Images
+%\usepackage{graphicx}
+%\usepackage[all]{xy}
+
+% Add some colour to our life
+%\usepackage{color}
+
+% Algorithm Packages
+%\usepackage[ruled]{algorithm}
+%\usepackage[noend]{algorithmic}
+
+% We are going to have some source-code listings
+\usepackage{verbatim}
+%\usepackage{program}
+% ref: http://mirror.csclub.uwaterloo.ca/CTAN/macros/latex/contrib/listings/listings.pdf
+%\usepackage{listings}
+
+% PS Tricks
+%\usepackage{pstricks,pst-node}
+
+%%
+% A simple command line enabled option.  If it's on we try and make a
+% colour document.  If it is off, we try to make a black and white
+% document.
+%%
+% Use by calling:
+%
+% $  latex '\newcommand{\blackandwhite}{true}\input{test.tex}'
+% 
+% Source: http://en.wikibooks.org/wiki/LaTeX/Customizing_LaTeX
+%%
+%\usepackage{ifthen}
+%\ifthenelse{\equal{\blackandwhite}{true}}{
+  % "black and white" mode; do something..
+%}{
+  % "color" mode; do something different..
+%}
+
+% Import some macros
+
+% Title
+%\title{On the Effect of Higher-Order Methods on Cache Hierarchies}
+%\author{Ben Burnett\\
+ % \small{\tt{ben.burnett@uleth.ca}} }
+%\date{}
+
+\begin{document}
+
+Do $n$-grams observe Ziff's law when looking at the subset of the
+$n$-grams of the same size:
+
+Let $W_i = \{w_1,w_2\ldots,w_m\} \cup \{w_2,w_1,\ldots,w_m\} \cup
+\ldots\}$ be the set of n-grams for word $W_I$. Let $\omega_i =
+\{w_k,\ldots,w_m\}_i$ be the $W_{ij}$ where $j$ denotes the merge
+operation above.
+
+Since we are preserving the order of the n-grams, we can measure the
+ratio, $\|W_1\| < \|W_2\| <\ldots < \|W_m\|$.  Does this ratio assume
+the same properties as if Ziff's law.  That is, since Ziff's law
+states that the most frequent word will occur approximately twice as
+often as the second most frequent word, three times as often as the
+third most frequent word, etc.. Can the same be said of all $n$-grams.
+
+Most formally: Will the most frequent item, $W_1$, occur twice as
+often as the second most frequent $n$-gram, $W_2$ when they are
+$n$-grams of the same size and the constituent words are identical.
+
+\end{document}
+
+%%
+% Local Variables: 
+% mode: latex
+% TeX-master: t
+% End: 
+%%
