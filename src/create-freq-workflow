@@ -3,6 +3,10 @@
 BZ_SRT_SRC="/dfs/condor/data/subtitles/gz-subtitle-files"
 MOVIE_FILES="/dfs/condor/data/subtitles/metadata/movie_titles.txt"
 
+printf "SRC=$BZ_SRT_SRC\n\n"
+
 for MOVIE in `cat movie_titles.txt | cut -d, -f1`; do
-    printf "$MOVIE.freq: \n\tcat $BZ_SRT_SRC/$MOVIE.gz | srt2text | freq-map | freq-reduce >$MOVIE.freq\n\n"
+    OUTPUT=$MOVIE.freq.gz
+    printf "$OUTPUT: \n\tcat \$SRC/$MOVIE.gz | srt2text | freq-map | freq-reduce | gzip -9 >$OUTPUT\n\n"
 done
+
