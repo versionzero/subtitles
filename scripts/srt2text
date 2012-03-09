@@ -49,10 +49,6 @@ sub clean {
   $subtitle =~ s/\ +/ /g;
   # Casefolding
   $subtitle =~ y/A-Z/a-z/;
-  #my @words = split(/ /, $subtitle);
-  #for my $i (0 .. $#words) {
-  #  print "$words[$i], $i\n";
-  #}
   return $subtitle;
 }
 
@@ -78,6 +74,11 @@ sub process {
 
 while (<STDIN>) {
   chomp;
+  ##
+  # This was a real headache: we were failing to parse many srt files
+  # because the had DOS new-lines (^M). The following strips them:
+  ##
+  tr/\r$//d;
   given ($state) {
     when (SEARCHING) {
       ##
