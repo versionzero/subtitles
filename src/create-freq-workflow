@@ -10,7 +10,7 @@ printf "BIN=$NGRAM_BIN\n\n"
 for MOVIE in `cat movies.txt | awk '{ print $2 }'`; do
     INPUT=$MOVIE.text.gz
     OUTPUT=$MOVIE.1.freq.gz
-    printf "$OUTPUT: \n\t\$BIN/ngram-count -order 5 -sort -text $INPUT"
+    printf "$OUTPUT: \n\t\$BIN/ngram-count -order 5 -sort -text $SRC/$INPUT"
     for x in {1..5}; do
 	printf " -write$x \$DST/$MOVIE.$x.freq.gz"
     done
