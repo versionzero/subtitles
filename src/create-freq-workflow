@@ -1,21 +1,18 @@
 #!/bin/sh
 
 NGRAM_BIN="/home/condor/binaries/srilm/bin/i686"
-BZ_SRT_SRC="/dfs/condor/data/subtitles/gz-subtitle-files"
-MOVIE_FILES="/dfs/condor/data/subtitles/metadata/movie_titles.txt"
+BZ_SRT_SRC="/dfs/condor/data/subtitles/text"
 
 printf "SRC=$BZ_SRT_SRC\n"
-printf "DST=/dfs/burnett/data/subtitles\n"
+printf "DST=/dfs/burnett/data/subtitles/ngrams\n"
 printf "BIN=$NGRAM_BIN\n\n"
 
 for MOVIE in `cat movies.txt | awk '{ print $2 }'`; do
-    OUTPUT=$MOVIE.txt.gz
-    printf "$OUTPUT: \n\tcat \$SRC/$MOVIE.gz | srt2text | gzip -9 >\$DST/$OUTPUT\n\n"
-    INPUT=$OUTPUT
-    OUTPUT=$MOVIE.freq.gz
-    printf "$OUTPUT: \n\t\$BIN/ngram-count -order 5 -sort -file $INPUT"
+    INPUT=$MOVIE.text.gz
+    OUTPUT=$MOVIE.1.freq.gz
+    printf "$OUTPUT: \n\t\$BIN/ngram-count -order 5 -sort -text $INPUT"
     for x in {1..5}; do
-	printf " -write$x \$DST/$MOVIE.$x.freq"
+	printf " -write$x \$DST/$MOVIE.$x.freq.gz"
     done
     printf "\n\n"
 done
